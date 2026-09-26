@@ -1,0 +1,30 @@
+"""Script 04 - Define the MLP image classifier, loss, optimizer and metric.
+
+Based on "Building the Classifier" in the template notebook.
+Requires: 01_setup.py
+"""
+class ImageClassifier(nn.Module):
+    def __init__(self, n_inputs, n_hidden1, n_hidden2, n_classes):
+        super().__init__()
+        self.mlp = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(n_inputs, n_hidden1),
+            nn.ReLU(),
+            nn.Linear(n_hidden1, n_hidden2),
+            nn.ReLU(),
+            nn.Linear(n_hidden2, n_classes)
+        )
+
+    def forward(self, X):
+        return self.mlp(X)
+
+torch.manual_seed(42)
+model = ImageClassifier(n_inputs=1 * 28 * 28, n_hidden1=300, n_hidden2=100,
+                        n_classes=10).to(device)
+xentropy = nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=10).to(device)
+
+print(model)
+print("trainable parameters:",
+      sum(param.numel() for param in model.parameters()))
